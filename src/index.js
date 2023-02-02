@@ -7,32 +7,17 @@ const formEl = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
 const loadBtn = document.querySelector(".load-more");
 
-console.log(loadBtn)
-
-let page = 1;
+// let page = 1;
+let inputValue = '';
 
 
 formEl.addEventListener('submit', searchForm);
-loadBtn.addEventListener('click', changePage);
-
-
-function changePage(){
-  console.log("G")
-}
-// page = 1;
-
-// findImg(inputValue).then(res=> { renderGallery(res.data.hits);
-//  if (res.data.page === res.data.pages) {
-//   loadBtn.hidden = true;
-// };
-// })
-
-// }
+loadBtn.addEventListener('click', onLoadBtnClik);
 
 function searchForm(e) {
   e.preventDefault();
 
-  let inputValue = e.currentTarget.searchQuery.value.trim();
+   inputValue = e.currentTarget.searchQuery.value.trim();
   // let inputValue = formEl.elements.searchQuery.value.trim();
   console.log(inputValue);
 
@@ -87,3 +72,6 @@ const lightbox = new SimpleLightbox('.photo-card a', {
   captions: true,
   captionDelay: 250,
 });
+function onLoadBtnClik(){
+  findImg(inputValue).then(res => {renderGallery(res.data.hits)});
+}
