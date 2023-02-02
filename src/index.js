@@ -5,9 +5,29 @@ import findImg from './fetch';
 
 const formEl = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
-const loadBtn = document.querySelector('.load-more');
+const loadBtn = document.querySelector(".load-more");
+
+console.log(loadBtn)
+
+let page = 1;
+
 
 formEl.addEventListener('submit', searchForm);
+loadBtn.addEventListener('click', changePage);
+
+
+function changePage(){
+  console.log("G")
+}
+// page = 1;
+
+// findImg(inputValue).then(res=> { renderGallery(res.data.hits);
+//  if (res.data.page === res.data.pages) {
+//   loadBtn.hidden = true;
+// };
+// })
+
+// }
 
 function searchForm(e) {
   e.preventDefault();
@@ -18,9 +38,12 @@ function searchForm(e) {
 
   if (!inputValue) {
     gallery.innerHTML = '';
-     return;
+    return;
   }
-  findImg(inputValue).then(res => renderGallery(res.data.hits));
+  findImg(inputValue).then(res => {renderGallery(res.data.hits)});
+  gallery.innerHTML = '';
+
+    lightbox.refresh();
 }
 
 function renderGallery(picture) {
@@ -59,8 +82,8 @@ function renderGallery(picture) {
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
-
 }
-// const lightbox = new SimpleLightbox('.gallery a', 
-// { captions: true,
-// captionDelay: 250,});
+const lightbox = new SimpleLightbox('.photo-card a', {
+  captions: true,
+  captionDelay: 250,
+});
