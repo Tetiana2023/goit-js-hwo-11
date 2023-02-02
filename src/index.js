@@ -80,6 +80,7 @@ const lightbox = new SimpleLightbox('.photo-card a', {
   captionDelay: 250,
 });
 function onLoadBtnClik(){
+  page += 1;
   findImg(inputValue).then(res => {renderGallery(res.data.hits)});
- page += 1;
+ 
 }
