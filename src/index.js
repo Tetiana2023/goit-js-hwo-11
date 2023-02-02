@@ -24,10 +24,6 @@ function searchForm(e) {
 }
 
 function renderGallery(picture) {
-//     const poto = new SimpleLightbox('.foto-card a', 
-// { captions: true,
-// captionDelay: 250,});
-
   const markup = picture
     .map(
       ({
@@ -65,3 +61,6 @@ function renderGallery(picture) {
   gallery.insertAdjacentHTML('beforeend', markup);
 
 }
+// const lightbox = new SimpleLightbox('.gallery a', 
+// { captions: true,
+// captionDelay: 250,});
