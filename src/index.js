@@ -9,6 +9,7 @@ const loadBtn = document.querySelector(".load-more");
 
 let page = 1;
 let inputValue = '';
+let totalImg = 0;
 
 
 formEl.addEventListener('submit', searchForm);
@@ -32,7 +33,21 @@ function searchForm(e) {
     gallery.innerHTML = '';
     return;
   }
-  findImg(inputValue, page).then(res => {console.log(res);renderGallery(res.data.hits)});
+  findImg(inputValue, page).then(res => {console.log(res);
+
+    totalImg = res.data.totalHits;
+    // console.log(totalImg)
+    if (res.data.totalHits === 0 ){
+      Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+      return
+
+    }else {
+      Notiflix.Notify.success(`Hooray! We found ${totalImg} images.`);
+      renderGallery(res.data.hits)
+       }
+    }
+
+    );
   gallery.innerHTML = '';
 
     lightbox.refresh();
@@ -81,6 +96,7 @@ const lightbox = new SimpleLightbox('.photo-card a', {
 });
 function onLoadBtnClik(e){
   page += 1;
-  findImg(inputValue, page).then(res => {renderGallery(res.data.hits)});
+  findImg(inputValue, page).then(res => {console.log(res);
+     renderGallery(res.data.hits)});
  
 }
