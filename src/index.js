@@ -32,7 +32,7 @@ function searchForm(e) {
     gallery.innerHTML = '';
     return;
   }
-  findImg(inputValue).then(res => {console.log(res);renderGallery(res.data.hits)});
+  findImg(inputValue, page).then(res => {console.log(res);renderGallery(res.data.hits)});
   gallery.innerHTML = '';
 
     lightbox.refresh();
@@ -79,8 +79,8 @@ const lightbox = new SimpleLightbox('.photo-card a', {
   captions: true,
   captionDelay: 250,
 });
-function onLoadBtnClik(){
+function onLoadBtnClik(e){
   page += 1;
-  findImg(inputValue).then(res => {renderGallery(res.data.hits)});
+  findImg(inputValue, page).then(res => {renderGallery(res.data.hits)});
  
 }
