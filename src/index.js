@@ -1,5 +1,4 @@
 import Notiflix from 'notiflix';
-// import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import findImg from './fetch';
@@ -18,15 +17,14 @@ function searchForm(e) {
   console.log(inputValue);
 
   if (!inputValue) {
-    countryInfo.innerHTML = '';
-    countryList.innerHTML = '';
-    return;
+    gallery.innerHTML = '';
+     return;
   }
-  findImg().then(res => renderGallery(res.data.hits));
+  findImg(inputValue).then(res => renderGallery(res.data.hits));
 }
 
 function renderGallery(picture) {
-//     const gallery = new SimpleLightbox('.foto-card a', 
+//     const poto = new SimpleLightbox('.foto-card a', 
 // { captions: true,
 // captionDelay: 250,});
 
@@ -42,9 +40,9 @@ function renderGallery(picture) {
         downloads,
       }) => {
         return ` <div class="photo-card">
-        <a class="gallery-item" href="${largeImageURL}"
+        <a class="gallery-item" href="${largeImageURL}" >
         <img class="gallery-item" src="${webformatURL}" alt="${tags}" loading="lazy" />
-        </a>
+       </a>
         <div class="info">
           <p class="info-item">
             <b>Likes ${likes}</b>
@@ -66,5 +64,4 @@ function renderGallery(picture) {
 
   gallery.insertAdjacentHTML('beforeend', markup);
 
-  
 }
