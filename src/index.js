@@ -5,72 +5,106 @@ import findImg from './fetch';
 
 const formEl = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
-const loadBtn = document.querySelector(".load-more");
+const loadBtn = document.querySelector('.load-more');
 
 let page = 1;
 let inputValue = '';
 let totalImg = 0;
 let totalPages = 0;
-loadBtn.hidden = true;
-
 
 formEl.addEventListener('submit', searchForm);
 loadBtn.addEventListener('click', onLoadBtnClik);
 
-function searchForm(e) {
+// function searchForm(e) {
+//   e.preventDefault();
+
+//   inputValue = e.currentTarget.searchQuery.value.trim();
+//   // let inputValue = formEl.elements.searchQuery.value.trim();
+//   // console.log(inputValue);
+
+//   page = 1;
+//   gallery.innerHTML = '';
+
+//   if (!inputValue) {
+//     gallery.innerHTML = '';
+//     return;
+//   }
+//   findImg(inputValue, page).then(res => {
+//     console.log(res);
+
+//     totalImg = res.data.totalHits;
+//     // console.log(totalImg);
+
+//     if (res.data.totalHits === 0) {
+//       Notiflix.Notify.failure(
+//         'Sorry, there are no images matching your search query. Please try again.'
+//       );
+//       return;
+
+//     } else {
+//       Notiflix.Notify.success(`Hooray! We found ${totalImg} images.`);
+
+//       renderGallery(res.data.hits);
+//       lightbox();
+
+//       loadBtn.classList.remove('hidden');
+//       loadBtn.classList.add('visible');
+//     }
+//   }
+//   );
+//   gallery.innerHTML = '';
+// }
+// переписана на async
+async function searchForm(e) {
   e.preventDefault();
 
-   inputValue = e.currentTarget.searchQuery.value.trim();
+  inputValue = e.currentTarget.searchQuery.value.trim();
   // let inputValue = formEl.elements.searchQuery.value.trim();
-  console.log(inputValue);
+  // console.log(inputValue);
 
   page = 1;
   gallery.innerHTML = '';
 
-    if (!inputValue) {
+  if (!inputValue) {
     gallery.innerHTML = '';
     return;
   }
-  findImg(inputValue, page).then(res => {console.log(res);
-    loadBtn.hidden = false;
+  const res = await findImg(inputValue, page)
+// .then(res => {
+//     console.log(res);
 
     totalImg = res.data.totalHits;
-   console.log(totalImg)
-    if (res.data.totalHits === 0 ){
-      loadBtn.hidden = true;
+    // console.log(totalImg);
 
-      Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-      return
+    if (res.data.totalHits === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
 
-    }else {
+    } else {
       Notiflix.Notify.success(`Hooray! We found ${totalImg} images.`);
-      renderGallery(res.data.hits)
-       }
-           
-    })
-// gallery.innerHTML = '';
 
-//     lightbox.refresh();
+      renderGallery(res.data.hits);
+      lightbox();
 
-}  
+      loadBtn.classList.remove('hidden');
+      loadBtn.classList.add('visible');
+    }
+  }
 
- function renderGallery(picture) {
+  gallery.innerHTML = '';
+
+
+function renderGallery(picture) {
   const markup = picture
     .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
+      ({webformatURL, largeImageURL, tags, likes, views, comments, downloads,
       }) => {
-        return ` <div class="photo-card">
-        <a class="gallery__link" href="${largeImageURL}" >
-        <img class="gallery__image" src="${webformatURL}" alt="${tags}" loading="lazy" />
-       </a>
-        <div class="info">
+        return `<a class="gallery__link" href="${largeImageURL}" >
+         <div class="photo-card">
+         <img class="gallery__image" src="${webformatURL}" alt="${tags}" loading="lazy" />
+         <div class="info">
           <p class="info-item">
             <b>Likes ${likes}</b>
           </p>
@@ -84,29 +118,69 @@ function searchForm(e) {
             <b>Downloads ${downloads}</b>
           </p>
         </div>
-      </div>`;
+      </div>
+      </a>`;
       }
     )
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
 }
-const lightbox = new SimpleLightbox('.photo-card a', {
-  captions: true,
-  captionDelay: 250,
-});
-function onLoadBtnClik(e){
+
+function lightbox() {
+  new SimpleLightbox('.gallery a', {
+    captions: true,
+    captionDelay: 250,
+  }).refresh();
+}
+// переписана на async
+async function onLoadBtnClik(e) {
   page += 1;
 
- findImg(inputValue, page).then(res => {console.log(res);
+  const res = await findImg(inputValue, page)
+  // .then(res => {
+  //   console.log(res);
 
     totalPages = res.data.totalHits / 40;
     console.log(totalPages);
-    
-    if (page > totalPages){
-      loadBtn.hidden = true;
-      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+
+    loadBtn.classList.remove('hidden');
+    loadBtn.classList.add('visible');
+
+    if (page > totalPages) {
+      loadBtn.classList.add('hidden');
+      loadBtn.classList.remove('visible');
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
     }
-     renderGallery(res.data.hits)});   
-     
-    }
+    renderGallery(res.data.hits);
+    lightbox();
+  };
+
+  
+
+// function onLoadBtnClik(e) {
+//   page += 1;
+
+//   findImg(inputValue, page).then(res => {
+//     console.log(res);
+
+//     totalPages = res.data.totalHits / 40;
+//     console.log(totalPages);
+
+//     loadBtn.classList.remove('hidden');
+//     loadBtn.classList.add('visible');
+
+//     if (page > totalPages) {
+//       loadBtn.classList.add('hidden');
+//       loadBtn.classList.remove('visible');
+//       Notiflix.Notify.info(
+//         "We're sorry, but you've reached the end of search results."
+//       );
+//     }
+//     renderGallery(res.data.hits);
+//   });
+
+//   light();
+// }
