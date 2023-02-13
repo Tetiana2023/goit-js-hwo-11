@@ -8,35 +8,43 @@ let options = {
   root: null,
   rootMargin: '300px',
   threshold: 0,
-}
+};
 
-let callback = (entries, observer)=> {
+let callback = (entries, observer) => {
   entries.forEach(entry => {
-      if(entry.isIntersecting){
-        page += 1;
-        inputValue = e.currentTarget.searchQuery.value.trim();
-        const res = await findImg(inputValue, page)
-        // .then(res => {
-        renderGallery(res.data.hits); 
-          totalPages = res.data.totalHits / 40;
-          console.log(totalPages);
-      
-                
-          if (page > totalPages) {
-            
-            // observer.unobserve(target);
-            
-            Notiflix.Notify.info(
-              "We're sorry, but you've reached the end of search results."
-              observer.unobserve(target)
-            );
-          }
-          // renderGallery(res.data.hits);
-          // observer.unobserve(target);
-          lightbox();
-      }
-    })
-}
+    if (entry.isIntersecting) {
+      page += 1;
+      inputValue = e.currentTarget.searchQuery.value.trim();
+      // const res = await
+      findImg(inputValue, page).then(res => {
+         renderGallery(res.data.hits);
+        lightbox();
+
+        //
+        // let count= res.data.totalHits - PER_PAGE * page;
+        // if (count < 0 ){
+        //   Notiflix.Notify.info(
+        //     "We're sorry, but you've reached the end of search results.")
+        //      observer.unobserve(target);
+        //      return;
+
+        // }
+        totalPages = res.data.totalHits / 40;
+        console.log(totalPages);
+        if (page > totalPages) {
+          observer.unobserve(target);
+          Notiflix.Notify.info(
+            "We're sorry, but you've reached the end of search results."
+          );
+          return;
+        }
+        // renderGallery(res.data.hits);
+        //  observer.unobserve(target);
+        // lightbox();
+      });
+    }
+  });
+};
 
 let observer = new IntersectionObserver(callback, options);
 let target = document.querySelector('.js-guard');
@@ -108,41 +116,46 @@ async function searchForm(e) {
     gallery.innerHTML = '';
     return;
   }
-  const res = await findImg(inputValue, page)
-// .then(res => {
-//     console.log(res);
+  const res = await findImg(inputValue, page);
+  // .then(res => {
+  //     console.log(res);
 
-    totalImg = res.data.totalHits;
-    // console.log(totalImg);
+  totalImg = res.data.totalHits;
+  // console.log(totalImg);
 
-    if (res.data.totalHits === 0) {
-      Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-      return;
+  if (res.data.totalHits === 0) {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+    return;
+  } else {
+    Notiflix.Notify.success(`Hooray! We found ${totalImg} images.`);
 
-    } else {
-      Notiflix.Notify.success(`Hooray! We found ${totalImg} images.`);
+    renderGallery(res.data.hits);
+    observer.unobserve(target);
+    lightbox();
 
-      renderGallery(res.data.hits);
-      observer.unobserve(target);
-      lightbox();
-
-      // loadBtn.classList.remove('hidden');
-      // loadBtn.classList.add('visible');
-      // observer.unobserve(target);
-    }
+    loadBtn.classList.remove('hidden');
+    loadBtn.classList.add('visible');
+   
   }
+}
 
-  gallery.innerHTML = '';
-
+gallery.innerHTML = '';
 
 function renderGallery(picture) {
   const markup = picture
     .map(
-      ({webformatURL, largeImageURL, tags, likes, views, comments, downloads,
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
       }) => {
-        return  `<a class="gallery__link" href="${largeImageURL}" >
+        return `<a class="gallery__link" href="${largeImageURL}" >
         <div class="photo-card">
         <img class="gallery__image" src="${webformatURL}" alt="${tags}" loading="lazy" />
         <div class="info">
@@ -166,7 +179,7 @@ function renderGallery(picture) {
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
- 
+  // observer.unobserve(target);
 }
 
 function lightbox() {
@@ -179,28 +192,26 @@ function lightbox() {
 async function onLoadBtnClik(e) {
   page += 1;
 
-  const res = await findImg(inputValue, page)
+  const res = await findImg(inputValue, page);
   // .then(res => {
   //   console.log(res);
 
-    totalPages = res.data.totalHits / 40;
-    console.log(totalPages);
+  totalPages = res.data.totalHits / 40;
+  console.log(totalPages);
 
-    loadBtn.classList.remove('hidden');
-    loadBtn.classList.add('visible');
+  loadBtn.classList.remove('hidden');
+  loadBtn.classList.add('visible');
 
-    if (page > totalPages) {
-      loadBtn.classList.add('hidden');
-      loadBtn.classList.remove('visible');
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
-    }
-    renderGallery(res.data.hits);
-    lightbox();
-  };
-
-  
+  if (page > totalPages) {
+    loadBtn.classList.add('hidden');
+    loadBtn.classList.remove('visible');
+    Notiflix.Notify.info(
+      "We're sorry, but you've reached the end of search results."
+    );
+  }
+  renderGallery(res.data.hits);
+  lightbox();
+}
 
 // function onLoadBtnClik(e) {
 //   page += 1;
