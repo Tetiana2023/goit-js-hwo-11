@@ -3,6 +3,45 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import findImg from './fetch';
 
+// // scroll infinity
+let options = {
+  root: null,
+  rootMargin: '300px',
+  threshold: 0,
+}
+
+let callback = (entries, observer)=> {
+  entries.forEach(entry => {
+      if(entry.isIntersecting){
+        page += 1;
+        inputValue = e.currentTarget.searchQuery.value.trim();
+        const res = await findImg(inputValue, page)
+        // .then(res => {
+        renderGallery(res.data.hits); 
+          totalPages = res.data.totalHits / 40;
+          console.log(totalPages);
+      
+                
+          if (page > totalPages) {
+            
+            // observer.unobserve(target);
+            
+            Notiflix.Notify.info(
+              "We're sorry, but you've reached the end of search results."
+              observer.unobserve(target)
+            );
+          }
+          // renderGallery(res.data.hits);
+          // observer.unobserve(target);
+          lightbox();
+      }
+    })
+}
+
+let observer = new IntersectionObserver(callback, options);
+let target = document.querySelector('.js-guard');
+// -------------------------------------------------
+
 const formEl = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
 const loadBtn = document.querySelector('.load-more');
@@ -86,10 +125,12 @@ async function searchForm(e) {
       Notiflix.Notify.success(`Hooray! We found ${totalImg} images.`);
 
       renderGallery(res.data.hits);
+      observer.unobserve(target);
       lightbox();
 
-      loadBtn.classList.remove('hidden');
-      loadBtn.classList.add('visible');
+      // loadBtn.classList.remove('hidden');
+      // loadBtn.classList.add('visible');
+      // observer.unobserve(target);
     }
   }
 
@@ -125,6 +166,7 @@ function renderGallery(picture) {
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
+ 
 }
 
 function lightbox() {
@@ -182,5 +224,5 @@ async function onLoadBtnClik(e) {
 //     renderGallery(res.data.hits);
 //   });
 
-//   light();
+//   lightbox();
 // }
