@@ -14,8 +14,7 @@ let callback = (entries, observer) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       page += 1;
-      inputValue = e.currentTarget.searchQuery.value.trim();
-      // const res = await
+     
       findImg(inputValue, page).then(res => {
          renderGallery(res.data.hits);
         lightbox();
@@ -32,7 +31,7 @@ let callback = (entries, observer) => {
         totalPages = res.data.totalHits / 40;
         console.log(totalPages);
         if (page > totalPages) {
-          observer.unobserve(target);
+          observer.observe(target);
           Notiflix.Notify.info(
             "We're sorry, but you've reached the end of search results."
           );
@@ -132,7 +131,7 @@ async function searchForm(e) {
     Notiflix.Notify.success(`Hooray! We found ${totalImg} images.`);
 
     renderGallery(res.data.hits);
-    observer.unobserve(target);
+    observer.observe(target);
     lightbox();
 
     loadBtn.classList.remove('hidden');
