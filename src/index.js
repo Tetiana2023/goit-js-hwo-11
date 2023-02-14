@@ -31,7 +31,7 @@ let callback = (entries, observer) => {
         totalPages = res.data.totalHits / 40;
         console.log(totalPages);
         if (page > totalPages) {
-          observer.observe(target);
+          observer.unobserve(target);
           Notiflix.Notify.info(
             "We're sorry, but you've reached the end of search results."
           );
